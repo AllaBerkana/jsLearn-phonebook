@@ -11,12 +11,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="phonebook/css/style.css">
-
-  
+  <script src="./phonebook/script/script.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      phoneBookInit('#app', 'Alla');
+    });
+  </script>
 </head>
 
 <body>
-
+  <div id="app"></div>
 </body>
 
 </html>
