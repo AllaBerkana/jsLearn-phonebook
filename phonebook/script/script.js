@@ -235,6 +235,30 @@ const data = [
     });
   };
 
+  const textEdit = (allRow) => {
+    const btnEdit = document.createElement('BUTTON');
+    btnEdit.classList = 'btn btn-outline-primary btn-edit';
+    btnEdit.textContent = 'ред.';
+    btnEdit.style.cssText = `
+      padding: 0.1rem  0.2rem 0.2rem;
+      margin-left: 10px;
+      box-shadow: none;
+      font-size: 1rem;
+      line-height: 1;
+      vertical-align: baseline;
+    `;
+
+    // edit phoneNum
+    allRow.forEach(tr => {
+      tr.phoneLink.addEventListener('mouseover', () => {
+        tr.phoneLink.after(btnEdit);
+      });
+      tr.addEventListener('mouseleave', () => {
+        btnEdit.remove();
+      });
+    });
+  };
+
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
@@ -243,6 +267,7 @@ const data = [
     // functional
     const allRow = renderContacts(list, data);
     hoverRow(allRow, logo);
+    textEdit(allRow);
 
     btnAdd.addEventListener('click', () =>
       formOverlay.classList.add('is-visible'));

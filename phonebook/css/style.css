@@ -1,6 +1,9 @@
 body {
   min-width: 420px;
 }
+tr{
+  vertical-align: middle;
+}
 
 .header {
   background-color: #3e5e93;
