@@ -24,6 +24,11 @@ const data = [
 ];
 
 {
+  const addContactData = contact => {
+    data.push(contact);
+    console.log('data: ', data);
+  };
+
   const createContainer = () => {
     const container = document.createElement('DIV');
     container.classList.add('container');
@@ -117,8 +122,6 @@ const data = [
       </div>
     `);
 
-    const btnClose = form.querySelector('.close');
-
     const buttonsGroup = createButtonGroup([
       {
         className: 'btn btn-primary mr-3',
@@ -132,12 +135,12 @@ const data = [
       },
     ]);
 
+    form.overlay = overlay;
     form.append(...buttonsGroup.btns);
     overlay.append(form);
     return {
       overlay,
       form,
-      btnClose,
     };
   };
 
@@ -175,7 +178,7 @@ const data = [
     ]);
 
     const table = createTable();
-    const form = createForm();
+    const { overlay, form } = createForm();
     const footer = createFooter(title);
 
     header.headerContainer.append(logo);
@@ -187,8 +190,8 @@ const data = [
       logo,
       btnAdd: buttonsGroup.btns[0],
       btnDel: buttonsGroup.btns[1],
-      formOverlay: form.overlay,
-      form: form.form,
+      formOverlay: overlay,
+      form,
       btnClose: form.btnClose,
     };
   };
@@ -261,34 +264,28 @@ const data = [
     });
   };
 
-  const init = (selectorApp, title) => {
-    const app = document.querySelector(selectorApp);
-    const phoneBook = renderPhoneBook(app, title);
-    const {
-      list,
-      logo,
-      btnAdd,
-      formOverlay,
-      form,
-      btnClose,
-      btnDel,
-    } = phoneBook;
+  const modalControl = (btnAdd, formOverlay) => {
+    const openModal = () => {
+      formOverlay.classList.add('is-visible');
+    };
 
-    // functional
-    const allRow = renderContacts(list, data);
-    hoverRow(allRow, logo);
-    textEdit(allRow);
+    const closeModal = () => {
+      formOverlay.classList.remove('is-visible');
+    };
 
-    btnAdd.addEventListener('click', () =>
-      formOverlay.classList.add('is-visible'));
-
+    btnAdd.addEventListener('click', openModal);
     formOverlay.addEventListener('click', (e) => {
       const target = e.target;
-      if (target === formOverlay || target.classList.contains('close')) {
-        formOverlay.classList.remove('is-visible');
-      }
+      if (target === formOverlay ||
+        target.classList.contains('close')) closeModal();
     });
 
+    return {
+      closeModal,
+    };
+  };
+
+  const deleteControle = (btnDel, list) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del =>
         del.classList.toggle('is-visible'));
@@ -299,15 +296,47 @@ const data = [
         e.target.closest('.contact').remove();
       }
     });
+  };
 
-    setTimeout(() => {
-      const contactTr = createRow({
-        name: 'Alex',
-        surname: 'Mirson',
-        phone: '+19802525225',
-      });
-      list.append(contactTr);
-    }, 2000);
+  const addContactToPage = (newContact, list) => {
+    list.append(createRow(newContact));
+  };
+
+  const formControle = (form, list, closeModal) => {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const newContact = Object.fromEntries(formData);
+      console.log('newContact: ', newContact);
+
+      addContactToPage(newContact, list);
+      addContactData(newContact);
+      form.reset();
+      closeModal();
+    });
+  };
+
+  const init = (selectorApp, title) => {
+    const app = document.querySelector(selectorApp);
+
+    const {
+      list,
+      logo,
+      btnAdd,
+      formOverlay,
+      form,
+      btnDel,
+    } = renderPhoneBook(app, title);
+
+    // functional
+    const allRow = renderContacts(list, data);
+    const { closeModal } = modalControl(btnAdd, formOverlay);
+    hoverRow(allRow, logo);
+    textEdit(allRow);
+
+
+    deleteControle(btnDel, list);
+    formControle(form, list, closeModal);
   };
 
   window.phoneBookInit = init;
