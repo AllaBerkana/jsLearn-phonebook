@@ -186,6 +186,7 @@ const data = [
       list: table.tbody,
       logo,
       btnAdd: buttonsGroup.btns[0],
+      btnDel: buttonsGroup.btns[1],
       formOverlay: form.overlay,
       form: form.form,
       btnClose: form.btnClose,
@@ -194,6 +195,7 @@ const data = [
 
   const createRow = ({ name: firsname, surname, phone }) => {
     const tr = document.createElement('TR');
+    tr.classList.add('contact');
 
     const tdDel = document.createElement('TD');
     tdDel.className = 'delete';
@@ -262,7 +264,15 @@ const data = [
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
-    const { list, logo, btnAdd, formOverlay, form, btnClose } = phoneBook;
+    const {
+      list,
+      logo,
+      btnAdd,
+      formOverlay,
+      form,
+      btnClose,
+      btnDel,
+    } = phoneBook;
 
     // functional
     const allRow = renderContacts(list, data);
@@ -271,11 +281,33 @@ const data = [
 
     btnAdd.addEventListener('click', () =>
       formOverlay.classList.add('is-visible'));
-    btnClose.addEventListener('click', () =>
-      formOverlay.classList.remove('is-visible'));
-    form.addEventListener('click', event => event.stopPropagation());
-    formOverlay.addEventListener('click', () =>
-      formOverlay.classList.remove('is-visible'));
+
+    formOverlay.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target === formOverlay || target.classList.contains('close')) {
+        formOverlay.classList.remove('is-visible');
+      }
+    });
+
+    btnDel.addEventListener('click', () => {
+      document.querySelectorAll('.delete').forEach(del =>
+        del.classList.toggle('is-visible'));
+    });
+
+    list.addEventListener('click', e => {
+      if (e.target.closest('.del-icon')) {
+        e.target.closest('.contact').remove();
+      }
+    });
+
+    setTimeout(() => {
+      const contactTr = createRow({
+        name: 'Alex',
+        surname: 'Mirson',
+        phone: '+19802525225',
+      });
+      list.append(contactTr);
+    }, 2000);
   };
 
   window.phoneBookInit = init;
