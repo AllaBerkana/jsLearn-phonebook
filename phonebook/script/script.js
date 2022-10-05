@@ -1,32 +1,28 @@
 'use strict';
 
-const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
-];
-
 {
+  const setStorage = (data) =>
+    localStorage.setItem('phonebook', JSON.stringify(data));
+
+  const getStorage = () => (localStorage.getItem('phonebook') ?
+    JSON.parse(localStorage.getItem('phonebook')) : []);
+
   const addContactData = contact => {
+    const data = getStorage('phonebook');
     data.push(contact);
-    console.log('data: ', data);
+    setStorage(data);
+  };
+
+  const removeStorage = (phone) => {
+    const data = getStorage('phonebook');
+    const newData = data.filter(item => {
+      if (item.phone !== phone) {
+        localStorage.removeItem(item.phone);
+      }
+      return item;
+    });
+    console.log('newData: ', newData);
+    setStorage(newData);
   };
 
   const createContainer = () => {
@@ -285,7 +281,7 @@ const data = [
     };
   };
 
-  const deleteControle = (btnDel, list) => {
+  const deleteControl = (btnDel, list, allRow) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del =>
         del.classList.toggle('is-visible'));
@@ -294,6 +290,7 @@ const data = [
     list.addEventListener('click', e => {
       if (e.target.closest('.del-icon')) {
         e.target.closest('.contact').remove();
+        removeStorage('phone');
       }
     });
   };
@@ -302,7 +299,7 @@ const data = [
     list.append(createRow(newContact));
   };
 
-  const formControle = (form, list, closeModal) => {
+  const formControl = (form, list, closeModal) => {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -318,6 +315,7 @@ const data = [
 
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
+    const data = getStorage();
 
     const {
       list,
@@ -334,9 +332,8 @@ const data = [
     hoverRow(allRow, logo);
     textEdit(allRow);
 
-
-    deleteControle(btnDel, list);
-    formControle(form, list, closeModal);
+    deleteControl(btnDel, list, allRow);
+    formControl(form, list, closeModal);
   };
 
   window.phoneBookInit = init;
